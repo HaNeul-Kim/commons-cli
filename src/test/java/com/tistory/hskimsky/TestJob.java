@@ -31,6 +31,8 @@ public class TestJob extends AbstractJob {
     addOption("d", "defaultValue", "DEFAULT_VALUE", "default value.");
     addOption("di", "defaultInt", Integer.TYPE, "1,2,3,4", ',', "default int 1,2,3,4.");
     addOption("ds", "defaultString", String.class, "s1|s2|s3", '|', "default string s1,s2,s3.");
+    addOption("duv1", "duplicatedValue1", "duplicatedValue", "duplicated value 1.");
+    addOption("duv2", "duplicatedValue2", "duplicatedValue", "duplicated value 2.");
   }
 
   @Override
@@ -51,6 +53,10 @@ public class TestJob extends AbstractJob {
     System.out.println("defaultInts = " + Arrays.toString(defaultInts));
     String[] defaultStrings = cli.getOptionValues("defaultString");
     System.out.println("defaultStrings = " + Arrays.toString(defaultStrings));
+    String duplicatedValue1 = cli.getOptionValue("duplicatedValue1");
+    System.out.println("duplicatedValue1 = " + duplicatedValue1);
+    String duplicatedValue2 = cli.getOptionValue("duplicatedValue2");
+    System.out.println("duplicatedValue2 = " + duplicatedValue2);
   }
 
   @Override

@@ -3,9 +3,9 @@ package com.tistory.hskimsky.commons.cli;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.Parser;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.List;
 
 /**
  * default value 를 해석할 수 있는 Parser
@@ -16,7 +16,7 @@ public class DefaultSettableParser extends Parser {
 
   @Override
   protected String[] flatten(Options opts, String[] arguments, boolean stopAtNonOption) {
-    Set<String> args = new LinkedHashSet<>(Arrays.asList(arguments));
+    List<String> args = new ArrayList<>(Arrays.asList(arguments));
     String longOptPrefix = "--";
     for (Object option : opts.getOptions()) {
       if (option instanceof DefaultOption) {
