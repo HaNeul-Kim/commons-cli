@@ -1,6 +1,7 @@
 package com.tistory.hskimsky;
 
 import com.tistory.hskimsky.commons.cli.AbstractJob;
+import com.tistory.hskimsky.commons.cli.Constants;
 import org.apache.commons.cli.CommandLine;
 
 import java.util.Arrays;
@@ -15,14 +16,16 @@ public class TestJob extends AbstractJob {
   private static final long serialVersionUID = 6007570799467354348L;
 
   public static void main(String[] args) throws Exception {
-    args = new String[]{"-r", "--requiredParameter", "REQUIRED_PARAMETER"};
-    new TestJob().run(args);
+    args = new String[]{"-r", "--requiredParameter", "REQUIRED_PARAMETER", "-rps", "param1,param2,param3"};
+    int exitCode = new TestJob().run(args);
+    System.exit(exitCode);
   }
 
   @Override
   protected void setOptions(String[] args) throws Exception {
     addOption(true, "r", "requiredOption", false, "required option.");
     addOption(true, "rp", "requiredParameter", true, "required parameter.");
+    addOption(true, "rps", "requiredParameters", true, ',', "required parameters.");
     addOption(false, "oi", "optionalParameterInt", false, Integer.TYPE, "optional parameter int.");
     // addOption(false, "ol", "optionalParameterLong", true, Long.class, "optional parameter long.");// use instead of addOption(String, String, String, String) or addOption(String, String, Class<?>, String, char, String)
     addOption("d", "defaultValue", "DEFAULT_VALUE", "default value.");
@@ -34,6 +37,8 @@ public class TestJob extends AbstractJob {
   protected void setup(CommandLine cli) throws Exception {
     boolean requiredOption = cli.hasOption("r");
     System.out.println("requiredOption = " + requiredOption);
+    String[] requiredParameters = cli.getOptionValues("requiredParameters");
+    System.out.println("requiredParameters = " + Arrays.toString(requiredParameters));
     String requiredParameter = cli.getOptionValue("requiredParameter");
     System.out.println("requiredParameter = " + requiredParameter);
     if (cli.hasOption("optionalParameterInt")) {
@@ -54,7 +59,7 @@ public class TestJob extends AbstractJob {
   }
 
   @Override
-  protected void process() throws Exception {
-
+  protected int process() throws Exception {
+    return Constants.JOB_SUCCESS;
   }
 }

@@ -24,13 +24,22 @@ public abstract class AbstractJob implements Serializable {
     addOption(required, opt, longOpt, hasArg, String.class, description);
   }
 
+  protected void addOption(boolean required, String opt, String longOpt, boolean hasArg, char valueSeparator, String description) {
+    addOption(required, opt, longOpt, hasArg, String.class, valueSeparator, description);
+  }
+
   protected void addOption(boolean required, String opt, String longOpt, boolean hasArg, Class<?> type, String description) {
+    addOption(required, opt, longOpt, hasArg, type, (char) 0, description);
+  }
+
+  protected void addOption(boolean required, String opt, String longOpt, boolean hasArg, Class<?> type, char valueSeparator, String description) {
     if (!required && hasArg) {
       throw new IllegalArgumentException("use instead of addOption(String, String, String, String) or addOption(String, String, Class<?>, String, char, String)");
     }
     Option option = new Option(opt, longOpt, hasArg, description);
     option.setRequired(required);
     option.setType(type);
+    option.setValueSeparator(valueSeparator);
     this.options.addOption(option);
   }
 
@@ -52,9 +61,9 @@ public abstract class AbstractJob implements Serializable {
 
   protected abstract void cleanup() throws Exception;
 
-  protected abstract void process() throws Exception;
+  protected abstract int process() throws Exception;
 
-  public void run(String[] args) throws Exception {
+  public int run(String[] args) throws Exception {
     this.options = new Options();
     addOption(false, "h", "help", false, "print usage");
     setOptions(args);
@@ -67,15 +76,16 @@ public abstract class AbstractJob implements Serializable {
     } catch (UnrecognizedOptionException | MissingOptionException e) {
       e.printStackTrace();
       h.printHelp(this.getClass().getSimpleName(), this.options, true);
-      return;
+      return Constants.JOB_FAIL;
     }
     if (cli.hasOption("help")) {
       h.printHelp(this.getClass().getSimpleName(), this.options, true);
-      return;
+      return Constants.JOB_FAIL;
     }
 
     setup(cli);
-    process();
+    int exitCode = process();
     cleanup();
+    return exitCode;
   }
 }
