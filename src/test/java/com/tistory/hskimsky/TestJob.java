@@ -29,8 +29,8 @@ public class TestJob extends AbstractJob {
     addOption(false, "oi", "optionalParameterInt", false, Integer.TYPE, "optional parameter int.");
     // addOption(false, "ol", "optionalParameterLong", true, Long.class, "optional parameter long.");// use instead of addOption(String, String, String, String) or addOption(String, String, Class<?>, String, char, String)
     addOption("d", "defaultValue", "DEFAULT_VALUE", "default value.");
-    addOption("di", "defaultInt", Integer.TYPE, "1,2,3,4", ',', "default int 1,2,3,4.");
-    addOption("ds", "defaultString", String.class, "s1|s2|s3", '|', "default string s1,s2,s3.");
+    addOption("di", "defaultInt", Integer.TYPE, "1,2,3,4", ",", "default int 1,2,3,4.");
+    addOption("ds", "defaultString", String.class, "s1|s2|s3", "|", "default string s1,s2,s3.");
     addOption("duv1", "duplicatedValue1", "duplicatedValue", "duplicated value 1.");
     addOption("duv2", "duplicatedValue2", "duplicatedValue", "duplicated value 2.");
   }

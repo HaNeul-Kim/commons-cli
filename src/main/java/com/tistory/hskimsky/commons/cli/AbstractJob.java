@@ -1,5 +1,7 @@
 package com.tistory.hskimsky.commons.cli;
 
+import com.tistory.hskimsky.commons.cli.experimental.DefaultOption;
+import com.tistory.hskimsky.commons.cli.experimental.DefaultSettableParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -9,6 +11,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.UnrecognizedOptionException;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * AbstractJob
@@ -38,17 +41,17 @@ public abstract class AbstractJob implements Serializable {
     }
     Option option = new Option(opt, longOpt, hasArg, description);
     option.setRequired(required);
-    option.setType(type);
+    option.setType(valueSeparator > 0 ? List.class : type);
     option.setValueSeparator(valueSeparator);
     this.options.addOption(option);
   }
 
   protected void addOption(String opt, String longOpt, String defaultValue, String description) {
-    addOption(opt, longOpt, String.class, defaultValue, (char) 0, description);
+    addOption(opt, longOpt, String.class, defaultValue, "", description);
   }
 
-  protected void addOption(String opt, String longOpt, Class<?> type, String defaultValue, char valueSeparator, String description) {
-    Option option = new DefaultOption(opt, longOpt, description, defaultValue, valueSeparator);
+  protected void addOption(String opt, String longOpt, Class<?> type, String defaultValue, String valueArraySeparator, String description) {
+    Option option = new DefaultOption(opt, longOpt, description, defaultValue, valueArraySeparator);
     option.setType(type);
     this.options.addOption(option);
   }
