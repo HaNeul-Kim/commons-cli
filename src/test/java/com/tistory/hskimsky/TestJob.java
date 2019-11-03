@@ -1,10 +1,10 @@
 package com.tistory.hskimsky;
 
 import com.tistory.hskimsky.commons.cli.AbstractJob;
+import com.tistory.hskimsky.commons.cli.CommandLine;
 import com.tistory.hskimsky.commons.cli.Constants;
-import org.apache.commons.cli.CommandLine;
-
-import java.util.Arrays;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * AbstractJob example
@@ -15,48 +15,36 @@ public class TestJob extends AbstractJob {
 
   private static final long serialVersionUID = 6007570799467354348L;
 
+  private static final Logger logger = LoggerFactory.getLogger(TestJob.class);
+
   public static void main(String[] args) throws Exception {
-    args = new String[]{"-r", "--requiredParameter", "REQUIRED_PARAMETER", "-rps", "param1,param2,param3"};
+    args = new String[]{"--sourceVMName", "test", "--targetVMNames", "test1,test2"};
+    // args = new String[]{"--sourceVMName", "test"};
     int exitCode = new TestJob().run(args);
     System.exit(exitCode);
   }
 
   @Override
-  protected void setOptions(String[] args) throws Exception {
-    addOption(true, "r", "requiredOption", false, "required option.");
-    addOption(true, "rp", "requiredParameter", true, "required parameter.");
-    addOption(true, "rps", "requiredParameters", true, ',', "required parameters.");
-    addOption(false, "oi", "optionalParameterInt", false, Integer.TYPE, "optional parameter int.");
-    // addOption(false, "ol", "optionalParameterLong", true, Long.class, "optional parameter long.");// use instead of addOption(String, String, String, String) or addOption(String, String, Class<?>, String, char, String)
-    addOption("d", "defaultValue", "DEFAULT_VALUE", "default value.");
-    addOption("di", "defaultInt", Integer.TYPE, "1,2,3,4", ",", "default int 1,2,3,4.");
-    addOption("ds", "defaultString", String.class, "s1|s2|s3", "|", "default string s1,s2,s3.");
-    addOption("duv1", "duplicatedValue1", "duplicatedValue", "duplicated value 1.");
-    addOption("duv2", "duplicatedValue2", "duplicatedValue", "duplicated value 2.");
+  protected void setOptions() throws Exception {
+    addOption(false, "sp", "sourcePath", "H:\\vm\\Linux", "원본 VM 경로");
+    addOption(false, "sv", "sourceVMName", "template67", "원본 VM 이름");
+    addOption(false, "tp", "targetPath", "H:\\vm\\Linux", "타겟 VM 경로");
+    addOption(true, "tvs", "targetVMNames", "vm1,vm2,vm3", ",", "타겟 VM 이름들 (comma separated)");
+    addOption(false, "e", "encoding", "UTF-8", "file encoding");
   }
 
   @Override
   protected void setup(CommandLine cli) throws Exception {
-    boolean requiredOption = cli.hasOption("r");
-    System.out.println("requiredOption = " + requiredOption);
-    String[] requiredParameters = cli.getOptionValues("requiredParameters");
-    System.out.println("requiredParameters = " + Arrays.toString(requiredParameters));
-    String requiredParameter = cli.getOptionValue("requiredParameter");
-    System.out.println("requiredParameter = " + requiredParameter);
-    if (cli.hasOption("optionalParameterInt")) {
-      int optionalParameterInt = Integer.parseInt(cli.getOptionValue("optionalParameterInt"));
-      System.out.println("optionalParameterInt = " + optionalParameterInt);
-    }
-    String defaultValue = cli.getOptionValue("defaultValue");
-    System.out.println("defaultValue = " + defaultValue);
-    String[] defaultInts = cli.getOptionValues("defaultInt");
-    System.out.println("defaultInts = " + Arrays.toString(defaultInts));
-    String[] defaultStrings = cli.getOptionValues("defaultString");
-    System.out.println("defaultStrings = " + Arrays.toString(defaultStrings));
-    String duplicatedValue1 = cli.getOptionValue("duplicatedValue1");
-    System.out.println("duplicatedValue1 = " + duplicatedValue1);
-    String duplicatedValue2 = cli.getOptionValue("duplicatedValue2");
-    System.out.println("duplicatedValue2 = " + duplicatedValue2);
+    String sourcePath = cli.getValue("sourcePath");
+    logger.info("sourcePath = {}", sourcePath);
+    String sourceVMName = cli.getValue("sourceVMName");
+    logger.info("sourceVMName = {}", sourceVMName);
+    String targetPath = cli.getValue("targetPath");
+    logger.info("targetPath = {}", targetPath);
+    String[] targetVMNames = cli.getValues("targetVMNames");
+    logger.info("targetVMNames = {}", (Object) targetVMNames);
+    String encoding = cli.getValue("encoding");
+    logger.info("encoding = {}", encoding);
   }
 
   @Override

@@ -1,16 +1,18 @@
-package com.tistory.hskimsky.commons.cli;
+package com.tistory.hskimsky.commons.cli.option;
 
-import java.io.Serializable;
-import java.util.Objects;
+import com.tistory.hskimsky.commons.cli.Argument;
+import com.tistory.hskimsky.commons.cli.Option;
 
 /**
  * default argument of cli default option
  *
  * @author Haneul, Kim
  */
-public class DefaultArgument implements Argument, Serializable {
+public class DefaultArgument implements Argument {
 
   private static final long serialVersionUID = 3134313555773078456L;
+
+  private Option parent;
 
   private String shortName;
 
@@ -18,13 +20,24 @@ public class DefaultArgument implements Argument, Serializable {
 
   private String defaultValue;
 
-  private String value;
-
-  public DefaultArgument(String shortName, String longName, String defaultValue, String value) {
+  public DefaultArgument(Option parent, String shortName, String longName, String defaultValue) {
+    this.parent = parent;
     this.shortName = shortName;
     this.longName = longName;
     this.defaultValue = defaultValue;
-    this.value = value;
+  }
+
+  public Option getParent() {
+    return parent;
+  }
+
+  @Override
+  public String getValue() {
+    return this.defaultValue;
+  }
+
+  public void setParent(Option parent) {
+    this.parent = parent;
   }
 
   public String getShortName() {
@@ -51,12 +64,9 @@ public class DefaultArgument implements Argument, Serializable {
     this.defaultValue = defaultValue;
   }
 
-  public String getValue() {
-    return value;
-  }
-
-  public void setValue(String value) {
-    this.value = value;
+  @Override
+  public Object clone() throws CloneNotSupportedException {
+    return super.clone();
   }
 
   @Override
@@ -67,37 +77,27 @@ public class DefaultArgument implements Argument, Serializable {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-
     DefaultArgument that = (DefaultArgument) o;
-
-    if (!shortName.equals(that.shortName)) {
-      return false;
-    }
-    if (!longName.equals(that.longName)) {
-      return false;
-    }
-    if (!Objects.equals(defaultValue, that.defaultValue)) {
-      return false;
-    }
-    return value.equals(that.value);
+    return parent.equals(that.parent) &&
+        shortName.equals(that.shortName) &&
+        longName.equals(that.longName);
   }
 
   @Override
   public int hashCode() {
-    int result = shortName.hashCode();
+    int result = parent.hashCode();
+    result = 31 * result + shortName.hashCode();
     result = 31 * result + longName.hashCode();
-    result = 31 * result + (defaultValue != null ? defaultValue.hashCode() : 0);
-    result = 31 * result + value.hashCode();
     return result;
   }
 
   @Override
   public String toString() {
     return "DefaultArgument{" +
-        "shortName='" + shortName + '\'' +
+        "parent='" + parent.getLongName() + '\'' +
+        ", shortName='" + shortName + '\'' +
         ", longName='" + longName + '\'' +
         ", defaultValue='" + defaultValue + '\'' +
-        ", value='" + value + '\'' +
         '}';
   }
 

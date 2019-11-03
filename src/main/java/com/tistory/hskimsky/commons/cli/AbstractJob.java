@@ -1,64 +1,40 @@
 package com.tistory.hskimsky.commons.cli;
 
-import com.tistory.hskimsky.commons.cli.experimental.DefaultOption;
-import com.tistory.hskimsky.commons.cli.experimental.DefaultSettableParser;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.MissingOptionException;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.UnrecognizedOptionException;
+import com.tistory.hskimsky.commons.cli.builder.DefaultOptionBuilder;
+import com.tistory.hskimsky.commons.cli.exception.DefaultParsingException;
+import com.tistory.hskimsky.commons.cli.option.DefaultOptions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * AbstractJob
  *
  * @author Haneul, Kim
- * @see com.tistory.hskimsky.TestJob
  */
 public abstract class AbstractJob implements Serializable {
 
+  private static final Logger logger = LoggerFactory.getLogger(AbstractJob.class);
+
+  // private List<Option> options;
   private Options options;
 
-  protected void addOption(boolean required, String opt, String longOpt, boolean hasArg, String description) {
-    addOption(required, opt, longOpt, hasArg, String.class, description);
+  protected void addOption(boolean required, String shortName, String longName, String description) {
+    addOption(required, shortName, longName, null, description);
   }
 
-  protected void addOption(boolean required, String opt, String longOpt, boolean hasArg, char valueSeparator, String description) {
-    addOption(required, opt, longOpt, hasArg, String.class, valueSeparator, description);
+  protected void addOption(boolean required, String shortName, String longName, String defaultValue, String description) {
+    addOption(required, shortName, longName, defaultValue, null, description);
   }
 
-  protected void addOption(boolean required, String opt, String longOpt, boolean hasArg, Class<?> type, String description) {
-    addOption(required, opt, longOpt, hasArg, type, (char) 0, description);
+  protected void addOption(boolean required, String shortName, String longName,
+                           String defaultValue, String arraySeparator, String description) {
+    this.options.addOption(new DefaultOptionBuilder().required(required).shortName(shortName).longName(longName).
+        defaultValue(defaultValue).arraySeparator(arraySeparator).description(description).build());
   }
 
-  protected void addOption(boolean required, String opt, String longOpt, boolean hasArg, Class<?> type, char valueSeparator, String description) {
-    if (!required && hasArg) {
-      throw new IllegalArgumentException("use instead of addOption(String, String, String, String) or addOption(String, String, Class<?>, String, char, String)");
-    }
-    Option option = new Option(opt, longOpt, hasArg, description);
-    option.setRequired(required);
-    option.setType(valueSeparator > 0 ? List.class : type);
-    option.setValueSeparator(valueSeparator);
-    this.options.addOption(option);
-  }
-
-  protected void addOption(String opt, String longOpt, String defaultValue, String description) {
-    addOption(opt, longOpt, String.class, defaultValue, "", description);
-  }
-
-  protected void addOption(String opt, String longOpt, Class<?> type, String defaultValue, String valueArraySeparator, String description) {
-    Option option = new DefaultOption(opt, longOpt, description, defaultValue, valueArraySeparator);
-    option.setType(type);
-    this.options.addOption(option);
-  }
-
-  protected void setOptions(String[] args) throws Exception {
-
-  }
+  protected abstract void setOptions() throws Exception;
 
   protected abstract void setup(CommandLine cli) throws Exception;
 
@@ -67,22 +43,22 @@ public abstract class AbstractJob implements Serializable {
   protected abstract int process() throws Exception;
 
   public int run(String[] args) throws Exception {
-    this.options = new Options();
-    addOption(false, "h", "help", false, "print usage");
-    setOptions(args);
+    this.options = new DefaultOptions();
+    addOption(false, "h", "help", "print usage");
+    setOptions();
 
-    HelpFormatter h = new HelpFormatter();
-    CommandLineParser parser = new DefaultSettableParser();
+    // HelpFormatter h = new HelpFormatter();
+    DefaultCommandLineParser parser = new DefaultCommandLineParser();
     CommandLine cli = null;
     try {
       cli = parser.parse(this.options, args);
-    } catch (UnrecognizedOptionException | MissingOptionException e) {
+    } catch (DefaultParsingException e) {
       e.printStackTrace();
-      h.printHelp(this.getClass().getSimpleName(), this.options, true);
+      // h.printHelp(this.getClass().getSimpleName(), this.options, true);
       return Constants.JOB_FAIL;
     }
-    if (cli.hasOption("help")) {
-      h.printHelp(this.getClass().getSimpleName(), this.options, true);
+    if (cli.fromCliOption("help")) {
+      // h.printHelp(this.getClass().getSimpleName(), this.options, true);
       return Constants.JOB_FAIL;
     }
 
