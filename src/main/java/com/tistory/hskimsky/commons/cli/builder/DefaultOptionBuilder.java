@@ -3,6 +3,7 @@ package com.tistory.hskimsky.commons.cli.builder;
 import com.tistory.hskimsky.commons.cli.Argument;
 import com.tistory.hskimsky.commons.cli.OptionGroup;
 import com.tistory.hskimsky.commons.cli.option.DefaultOption;
+import com.tistory.hskimsky.commons.cli.option.DefaultOptionGroup;
 
 import java.io.Serializable;
 import java.util.List;
@@ -45,8 +46,17 @@ public class DefaultOptionBuilder implements Serializable {
     return this;
   }
 
-  public DefaultOptionBuilder group(String groupName) {
-    this.group = new DefaultOptionGroupBuilder().name(groupName).build();
+  public DefaultOptionBuilder group(String name) {
+    this.group = new DefaultOptionGroupBuilder().name(name).build();
+    return this;
+  }
+
+  public DefaultOptionBuilder group(String parent, String name) {
+    DefaultOptionGroup parentOptionGroup = null;
+    if (parent != null) {
+      parentOptionGroup = new DefaultOptionGroupBuilder().name(parent).build();
+    }
+    this.group = new DefaultOptionGroupBuilder().parent(parentOptionGroup).name(name).build();
     return this;
   }
 
